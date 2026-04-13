@@ -26,7 +26,6 @@ new SlashCommandBuilder()
     .setName('샘플')
     .setDescription('포켓몬 샘플 작성 및 DB 저장')
     .addStringOption(o => o.setName('이름').setDescription('샘플 이름 (예: 물리형 피카츄)').setRequired(true))
-    .addStringOption(o => o.setName('설명').setDescription('샘플 부가설명 (예: 내 아내임)').setRequired(false))
     .addStringOption(o => o.setName('포켓몬').setDescription('포켓몬 이름 또는 번호').setRequired(true))
     .addStringOption(o => o.setName('도구').setDescription('지닌 도구 (예: 생명의구슬, 없음)').setRequired(true))
     .addStringOption(o => o.setName('특성').setDescription('특성 이름 (한국어 가능)').setRequired(true))
@@ -35,7 +34,8 @@ new SlashCommandBuilder()
     .addStringOption(o => o.setName('기술1').setDescription('첫 번째 기술').setRequired(true))
     .addStringOption(o => o.setName('기술2').setDescription('두 번째 기술').setRequired(true))
     .addStringOption(o => o.setName('기술3').setDescription('세 번째 기술').setRequired(true))
-    .addStringOption(o => o.setName('기술4').setDescription('네 번째 기술').setRequired(true)),
+    .addStringOption(o => o.setName('기술4').setDescription('네 번째 기술').setRequired(true))
+    .addStringOption(o => o.setName('설명').setDescription('샘플 부가설명 (예: 빠른 공격 위주 구성)').setRequired(false)),
   // 샘플 목록
   new SlashCommandBuilder()
     .setName('샘플목록')
