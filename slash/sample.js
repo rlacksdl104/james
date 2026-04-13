@@ -17,15 +17,17 @@ const ABILITY_KO = {
   '모래날리기':'sand-stream', '눈퍼뜨리기':'snow-warning',
 };
 
+// formatSample 함수 수정
 function formatSample(sample, index = null) {
   const prefix = index !== null ? `**[${index}]** ` : '';
   return [
-    `${prefix}📋 **${sample.koName}** (No.${sample.pokeId}) | 🏷️ \`${sample.types}\``,
+    `${prefix}📋 **${sample.sampleName || sample.koName}** (${sample.koName} No.${sample.pokeId}) | 🏷️ \`${sample.types}\``,
+    sample.sampleDesc && sample.sampleDesc !== '없음' ? `📝 설명: ${sample.sampleDesc}` : null,
     `🎒 도구: \`${sample.item}\` | ⭐ 특성: \`${sample.abilityKo || sample.ability}\` | 🌀 성격: \`${sample.nature}\``,
     `📊 노력치: \`${sample.evDisplay}\` (총합: ${sample.evTotal}/66)`,
     `⚔️ 기술: ${sample.moves.map((m, i) => `\`${i+1}.${m}\``).join(' ')}`,
     `👤 작성자: ${sample.authorTag} | 🕐 ${sample.createdAt}`,
-  ].join('\n');
+  ].filter(Boolean).join('\n');
 }
 
 module.exports = {
@@ -128,19 +130,22 @@ module.exports = {
       await interaction.editReply('💾 **[5/6]** 데이터베이스에 저장 중...');
       const now = new Date();
       const createdAt = `${now.getFullYear()}.${now.getMonth()+1}.${now.getDate()}`;
-      const sampleData = {
-        authorId: interaction.user.id,
-        authorTag: interaction.user.tag,
-        pokeName: pokeData.name,
-        koName, pokeId: pokeData.id, types,
-        item: interaction.options.getString('도구'),
-        ability: resolvedAbility,
-        abilityKo: abilityInput,
-        nature: interaction.options.getString('성격'),
-        evValues, evDisplay, evTotal,
-        moves, image, createdAt,
-        timestamp: serverTimestamp(),
-      };
+// 5. Firebase 저장 부분에 추가
+const sampleData = {
+  authorId: interaction.user.id,
+  authorTag: interaction.user.tag,
+  sampleName: interaction.options.getString('이름'),           // 추가
+  sampleDesc: interaction.options.getString('설명') || '없음', // 추가
+  pokeName: pokeData.name,
+  koName, pokeId: pokeData.id, types,
+  item: interaction.options.getString('도구'),
+  ability: resolvedAbility,
+  abilityKo: abilityInput,
+  nature: interaction.options.getString('성격'),
+  evValues, evDisplay, evTotal,
+  moves, image, createdAt,
+  timestamp: serverTimestamp(),
+};
 
       try {
         await getDb().collection('samples').add(sampleData);
