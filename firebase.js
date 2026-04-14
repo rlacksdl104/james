@@ -53,3 +53,11 @@ function formatFirebaseError(error) {
 }
 
 module.exports = { initializeFirebase, getDb, serverTimestamp, formatFirebaseError };
+
+// 봇 시작시 미리 초기화
+try {
+  initializeFirebase();
+  console.log('✅ Firebase 초기화 성공');
+} catch (e) {
+  console.error('❌ Firebase 초기화 실패:', e.message);
+}
