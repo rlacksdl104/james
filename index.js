@@ -42,6 +42,7 @@ client.on('interactionCreate', async (interaction) => {
     else if (commandName === '샘플')  await sampleSlash.sample(interaction);
     else if (commandName === '샘플목록') await sampleSlash.sampleList(interaction);
     else if (commandName === '샘플삭제') await sampleSlash.sampleDelete(interaction);
+    else if (commandName === '기술확인') await pokeSlash.moveList(interaction);
   } catch (e) {
     console.error(`[슬래시 오류] ${commandName}:`, e);
     if (interaction.deferred) interaction.editReply('⚠️ 오류가 발생했습니다.');

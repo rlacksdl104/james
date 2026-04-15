@@ -24,6 +24,80 @@ async function resolvePokeQuery(query) {
 }
 
 module.exports = {
+  // /기술
+  async moveList(interaction) {
+    await interaction.deferReply();
+    try {
+      const nameInput = interaction.options.getString('포켓몬');
+      let query;
+      try { query = await resolvePokeQuery(nameInput.toLowerCase()); } catch { query = null; }
+      if (!query) return interaction.editReply(`❌ **"${nameInput}"** 포켓몬을 찾을 수 없습니다.`);
+
+      const { data: pokeData } = await axios.get(`https://pokeapi.co/api/v2/pokemon/${query}`);
+      const { data: species } = await axios.get(pokeData.species.url);
+      const koName = species.names.find(n => n.language.name === 'ko')?.name || pokeData.name;
+
+      // 기술 목록 가져오기
+      const moves = pokeData.moves;
+      
+      // 배우는 방법별로 분류
+      const levelUp = [];
+      const tm = [];
+      const egg = [];
+      const tutor = [];
+
+      for (const move of moves) {
+        const moveName = move.move.name;
+        const methods = move.version_group_details.map(v => v.move_learn_method.name);
+        
+        if (methods.includes('level-up')) levelUp.push(moveName);
+        else if (methods.includes('machine')) tm.push(moveName);
+        else if (methods.includes('egg')) egg.push(moveName);
+        else if (methods.includes('tutor')) tutor.push(moveName);
+      }
+
+      const lines = [
+        `📖 **${koName}** 기술폭`,
+        '━'.repeat(30),
+        `⬆️ **레벨업 (${levelUp.length}개)**`,
+        levelUp.length ? levelUp.map(m => `\`${m}\``).join(' ') : '없음',
+        '',
+        `💿 **기술머신 (${tm.length}개)**`,
+        tm.length ? tm.map(m => `\`${m}\``).join(' ') : '없음',
+        '',
+        `🥚 **유전기 (${egg.length}개)**`,
+        egg.length ? egg.map(m => `\`${m}\``).join(' ') : '없음',
+        '',
+        `👨‍🏫 **기술가르침 (${tutor.length}개)**`,
+        tutor.length ? tutor.map(m => `\`${m}\``).join(' ') : '없음',
+      ].join('\n');
+
+      // 2000자 초과시 분할
+      if (lines.length > 1900) {
+        const chunks = [];
+        let chunk = '';
+        for (const line of lines.split('\n')) {
+          if ((chunk + line).length > 1900) {
+            chunks.push(chunk);
+            chunk = '';
+          }
+          chunk += line + '\n';
+        }
+        if (chunk) chunks.push(chunk);
+
+        await interaction.editReply(chunks[0]);
+        for (let i = 1; i < chunks.length; i++) {
+          await interaction.followUp(chunks[i]);
+        }
+      } else {
+        await interaction.editReply(lines);
+      }
+
+    } catch (e) {
+      console.error('[기술확인 오류]', e.message);
+      try { await interaction.editReply(`❌ 오류가 발생했습니다: ${e.message}`); } catch {}
+    }
+  },
   // /포켓몬
   async pokemon(interaction) {
     await interaction.deferReply();

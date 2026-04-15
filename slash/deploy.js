@@ -20,6 +20,14 @@ const commands = [
     .addStringOption(o => o.setName('포켓몬5').setDescription('다섯 번째 포켓몬').setRequired(false))
     .addStringOption(o => o.setName('포켓몬6').setDescription('여섯 번째 포켓몬').setRequired(false)),
 
+
+    // 기술확인
+new SlashCommandBuilder()
+    .setName('기술확인')
+    .setDescription('포켓몬이 배울 수 있는 기술 목록 조회')
+    .addStringOption(o => o.setName('포켓몬').setDescription('포켓몬 이름 또는 번호').setRequired(true)),
+
+    
   // 샘플 작성
 // 샘플 작성
 new SlashCommandBuilder()
